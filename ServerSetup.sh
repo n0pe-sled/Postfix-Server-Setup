@@ -457,7 +457,7 @@ setupSSH(){
 }
 
 PS3="Server Setup Script - Pick an option: "
-options=("Setup SSH" "Debian Prep" "Install SSL", "Install Mail Server", "Add Aliases", "Get DNS Entries", "Add Firewall Port", "Reset Firewall")
+options=("Setup SSH" "Debian Prep" "Install SSL", "Install Mail Server", "Add Aliases", "Get DNS Entries")
 select opt in "${options[@]}" "Quit"; do
 
     case "$REPLY" in
