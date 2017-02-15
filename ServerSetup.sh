@@ -139,7 +139,7 @@ install_postfix_dovecot() {
 	apt-get install -qq -y mailutils
 
 	read -p "Enter your mail server's domain: " -r primary_domain
-
+	read -p "Enter IP's to allow Relay (if none just hit enter): " -r relay_ip
 	echo "Configuring Postfix"
 
 	cat <<-EOF > /etc/postfix/main.cf
@@ -160,7 +160,7 @@ install_postfix_dovecot() {
 	myorigin = /etc/mailname
 	mydestination = ${primary_domain}, localhost.com, , localhost
 	relayhost =
-	mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+	mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128 ${relay_ip}
 	mailbox_command = procmail -a "\$EXTENSION"
 	mailbox_size_limit = 0
 	recipient_delimiter = +
@@ -213,6 +213,7 @@ install_postfix_dovecot() {
 	127.0.0.1
 	localhost
 	${primary_domain}
+	${relay_ip}
 	EOF
 
 	cd "/etc/opendkim/keys/${primary_domain}" || exit
