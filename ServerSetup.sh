@@ -457,8 +457,19 @@ setupSSH(){
 
 }
 
+function Install_GoPhish {
+	apt-get install unzip > /dev/null 2>&1
+	wget https://github.com/gophish/gophish/releases/download/v0.2.0/gophish-v0.2-linux-64bit.zip
+	unzip gophish-v0.2-linux-64bit.zip
+	cd gophish-v0.2-linux-64bit
+  sed -i 's/"listen_url" : "127.0.0.1:3333"/"listen_url" : "0.0.0.0:3333"/g' config.json
+	echo ""
+	echo "Please enter your mail server credentials into Config.json"
+	echo ""
+}
+
 PS3="Server Setup Script - Pick an option: "
-options=("Setup SSH" "Debian Prep" "Install SSL", "Install Mail Server", "Add Aliases", "Get DNS Entries")
+options=("Setup SSH" "Debian Prep" "Install SSL", "Install Mail Server", "Add Aliases", "Get DNS Entries", "Install GoPhish")
 select opt in "${options[@]}" "Quit"; do
 
     case "$REPLY" in
@@ -475,6 +486,8 @@ select opt in "${options[@]}" "Quit"; do
 		5) add_alias;;
 
 		6) get_dns_entries;;
+
+		7) Install_GoPhish;;
 
     $(( ${#options[@]}+1 )) ) echo "Goodbye!"; break;;
     *) echo "Invalid option. Try another one.";continue;;
