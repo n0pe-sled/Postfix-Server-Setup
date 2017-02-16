@@ -293,6 +293,10 @@ install_postfix_dovecot() {
 	ssl_key = </etc/letsencrypt/live/${primary_domain}/privkey.pem
 	EOF
 
+	read -p "What user would you like to assign to recieve email for Root: " -r user_name
+	echo "${user_name}: root" >> /etc/aliases
+	echo "Root email assigned to ${user_name}"
+
 	echo "Restarting Services"
 	service postfix restart
 	service opendkim restart
@@ -307,9 +311,6 @@ install_postfix_dovecot() {
 }
 
 function add_alias(){
-	read -p "What user would you like to assign to recieve email for Root: " -r user_name
-	echo "${user_name}: root" >> /etc/aliases
-	echo "Root email assigned to ${user_name}"
 
 	read -p "What email address do you want to assign: " -r email_address
 	read -p "What user do you want to assign to that email address: " -r user
