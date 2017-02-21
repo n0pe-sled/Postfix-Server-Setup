@@ -7,7 +7,8 @@ fi
 
 ### Functions ###
 
-initialize() {
+debian_initialize() {
+	echo "Updating and Installing Dependicies"
 	apt-get -qq update > /dev/null 2>&1
 	apt-get -qq -y upgrade > /dev/null 2>&1
 	apt-get install -qq -y nmap > /dev/null 2>&1
@@ -48,6 +49,49 @@ initialize() {
 	echo "The System will now reboot!"
 	reboot
 }
+
+ubuntu_initialize() {
+	echo "Updating and Installing Dependicies"
+	apt-get -qq update > /dev/null 2>&1
+	apt-get -qq -y upgrade > /dev/null 2>&1
+	apt-get install -qq -y nmap > /dev/null 2>&1
+	apt-get install -qq -y git > /dev/null 2>&1
+	rm -r /var/log/exim4/ > /dev/null 2>&1
+
+	update-rc.d nfs-common disable > /dev/null 2>&1
+	update-rc.d rpcbind disable > /dev/null 2>&1
+
+	echo "IPv6 Disabled"
+
+	cat <<-EOF >> /etc/sysctl.conf
+	net.ipv6.conf.all.disable_ipv6 = 1
+	net.ipv6.conf.default.disable_ipv6 = 1
+	net.ipv6.conf.lo.disable_ipv6 = 1
+	net.ipv6.conf.eth0.disable_ipv6 = 1
+	net.ipv6.conf.eth1.disable_ipv6 = 1
+	net.ipv6.conf.ppp0.disable_ipv6 = 1
+	net.ipv6.conf.tun0.disable_ipv6 = 1
+	EOF
+
+	sysctl -p > /dev/null 2>&1
+
+	echo "Changing Hostname"
+
+	read -p "Enter your hostname: " -r primary_domain
+
+	cat <<-EOF > /etc/hosts
+	127.0.1.1 $primary_domain $primary_domain
+	127.0.0.1 localhost
+	EOF
+
+	cat <<-EOF > /etc/hostname
+	$primary_domain
+	EOF
+
+	echo "The System will now reboot!"
+	reboot
+}
+
 
 reset_firewall() {
 	apt-get install iptables-persistent -q -y > /dev/null 2>&1
@@ -311,7 +355,6 @@ install_postfix_dovecot() {
 }
 
 function add_alias(){
-
 	read -p "What email address do you want to assign: " -r email_address
 	read -p "What user do you want to assign to that email address: " -r user
 	echo "${email_address}: ${user}" >> /etc/aliases
@@ -339,7 +382,7 @@ function get_dns_entries(){
 
 		Record Type: TXT
 		Host: @
-		Value: v=spf1 +mx +a -all
+		Value: v=spf1 ip4:${extip} -all
 		TTL: 5 min
 
 		Record Type: TXT
@@ -375,7 +418,7 @@ function get_dns_entries(){
 
 		Record Type: TXT
 		Host: ${prefix}
-		Value: v=spf1 +mx +a -all
+		Value: v=spf1 ip4:${extip} -all
 		TTL: 5 min
 
 		Record Type: TXT
@@ -470,7 +513,7 @@ function Install_GoPhish {
 }
 
 PS3="Server Setup Script - Pick an option: "
-options=("Setup SSH" "Debian Prep" "Install SSL", "Install Mail Server", "Add Aliases", "Get DNS Entries", "Install GoPhish")
+options=("Setup SSH" "Debian Prep" "Ubuntu Prep" "Install SSL" "Install Mail Server" "Add Aliases" "Get DNS Entries" "Install GoPhish")
 select opt in "${options[@]}" "Quit"; do
 
     case "$REPLY" in
@@ -478,17 +521,19 @@ select opt in "${options[@]}" "Quit"; do
     #Prep
     1) setupSSH;;
 
-		2) initialize;;
+		2) debian_initialize;;
 
-		3) install_ssl_Cert;;
+		3) ubuntu_initialize;;
 
-		4) install_postfix_dovecot;;
+		4) install_ssl_Cert;;
 
-		5) add_alias;;
+		5) install_postfix_dovecot;;
 
-		6) get_dns_entries;;
+		6) add_alias;;
 
-		7) Install_GoPhish;;
+		7) get_dns_entries;;
+
+		8) Install_GoPhish;;
 
     $(( ${#options[@]}+1 )) ) echo "Goodbye!"; break;;
     *) echo "Invalid option. Try another one.";continue;;
