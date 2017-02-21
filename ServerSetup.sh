@@ -391,7 +391,7 @@ function get_dns_entries(){
 		TTL: 5 min
 
 		Record Type: TXT
-		Host: ._dmarc
+		Host: _dmarc
 		Value: v=DMARC1; p=reject
 		TTL: 5 min
 
@@ -427,7 +427,7 @@ function get_dns_entries(){
 		TTL: 5 min
 
 		Record Type: TXT
-		Host: ._dmarc
+		Host: _dmarc
 		Value: v=DMARC1; p=reject
 		TTL: 5 min
 
