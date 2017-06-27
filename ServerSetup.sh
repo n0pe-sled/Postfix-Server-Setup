@@ -170,8 +170,30 @@ install_ssl_Cert() {
 	git clone https://github.com/certbot/certbot.git /opt/letsencrypt > /dev/null 2>&1
 
 	cd /opt/letsencrypt
-	read -p "Enter your server's domain: " -r domain
-	./certbot-auto certonly --standalone -d "${domain}" -n --register-unsafely-without-email --agree-tos
+	letsencryptdomains=()
+	end="false"
+	i=0
+	
+	while [ "$end" != "true" ]
+	do
+		read -p "Enter your server's domain or done to exit: " -r domain
+		if [ "$domain" != "done" ]
+		then
+			letsencryptdomains[$i]=$domain
+		else
+			end="true"
+		fi
+		((i++))
+	done
+	command="./certbot-auto certonly --standalone "
+	for i in "${letsencryptdomains[@]}";
+		do
+			command="$command -d $i"
+		done
+	command="$command -n --register-unsafely-without-email --agree-tos"
+	
+	eval $command
+
 }
 
 install_postfix_dovecot() {
@@ -512,8 +534,19 @@ function Install_GoPhish {
 	echo ""
 }
 
+
+function Install_IRedMail {
+	echo "Downloading iRedMail"
+	wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.9.6.tar.bz2
+	tar -xvf iRedMail-0.9.6.tar.bz2
+	cd iRedMail-0.9.6/
+	chmod +x iRedMail.sh
+	echo "Running iRedMail Installer"
+	./iRedMail.sh
+}
+
 PS3="Server Setup Script - Pick an option: "
-options=("Setup SSH" "Debian Prep" "Ubuntu Prep" "Install SSL" "Install Mail Server" "Add Aliases" "Get DNS Entries" "Install GoPhish")
+options=("Setup SSH" "Debian Prep" "Ubuntu Prep" "Install SSL" "Install Mail Server" "Add Aliases" "Get DNS Entries" "Install GoPhish" "Install IRedMail")
 select opt in "${options[@]}" "Quit"; do
 
     case "$REPLY" in
@@ -534,6 +567,8 @@ select opt in "${options[@]}" "Quit"; do
 		7) get_dns_entries;;
 
 		8) Install_GoPhish;;
+
+		9) Install_IRedMail;;
 
     $(( ${#options[@]}+1 )) ) echo "Goodbye!"; break;;
     *) echo "Invalid option. Try another one.";continue;;
