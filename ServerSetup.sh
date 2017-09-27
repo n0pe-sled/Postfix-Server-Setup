@@ -525,13 +525,32 @@ setupSSH(){
 
 function Install_GoPhish {
 	apt-get install unzip > /dev/null 2>&1
-	wget https://github.com/gophish/gophish/releases/download/v0.2.0/gophish-v0.2-linux-64bit.zip
-	unzip gophish-v0.2-linux-64bit.zip
-	cd gophish-v0.2-linux-64bit
-  sed -i 's/"listen_url" : "127.0.0.1:3333"/"listen_url" : "0.0.0.0:3333"/g' config.json
-	echo ""
-	echo "Please enter your mail server credentials into Config.json"
-	echo ""
+	wget https://github.com/gophish/gophish/releases/download/v0.4.0/gophish-v0.4-darwin-64bit.zip
+	unzip gophish-v0.4-darwin-64bit.zip
+	cd gophish-v0.4-darwin-64bit
+        sed -i 's/"listen_url" : "127.0.0.1:3333"/"listen_url" : "0.0.0.0:3333"/g' config.json
+	read -r -p "Do you want to add an SSL certificate to your GoPhish? [y/N] " response
+	case "$response" in
+	[yY][eE][sS]|[yY])
+        	 read -p "Enter your web server's domain: " -r primary_domain
+		 if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ];then
+		 	ssl_cert = /etc/letsencrypt/live/${primary_domain}/fullchain.pem
+       		 	ssl_key = /etc/letsencrypt/live/${primary_domain}/privkey.pem
+       		 	cp ssl_cert ${primary_domain}.crt
+        	 	cp ssl_key ${primary_domain}.key
+        	 	sed -i 's/"listen_url" : "0.0.0.0:80"/"listen_url" : "0.0.0.0:443"/g' config.json
+        	 	sed -i 's/"cert_path" : "gophish_admin.crt"/"cert_path" : "${primary_domain}.crt"/g' config.json
+        	 	sed -i 's/"key_path" : "gophish_admin.key"/"key_path" : "${primary_domain}.key"/g' config.json
+       	 	 	sed -i 's/"use_tls" : false/"use_tls" : true/g' config.json
+        	 	sed -i 's/"cert_path" : "example.crt"/"cert_path" : "${primary_domain}.crt"/g' config.json
+        	 	sed -i 's/"key_path": "example.key"/"key_path": "${primary_domain}.key"/g' config.json
+		 else
+			echo "Certificate not found, use Install SSL option first"
+       		 ;;
+    	*)
+        	echo ""
+        	;;
+	esac
 }
 
 
