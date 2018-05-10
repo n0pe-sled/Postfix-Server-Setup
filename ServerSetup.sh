@@ -8,7 +8,7 @@ fi
 ### Functions ###
 
 debian_initialize() {
-	echo "Updating and Installing Dependicies"
+	echo "Updating and Installing Dependencies"
 	apt-get -qq update > /dev/null 2>&1
 	apt-get -qq -y upgrade > /dev/null 2>&1
 	apt-get install -qq -y nmap > /dev/null 2>&1
