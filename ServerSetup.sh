@@ -36,7 +36,6 @@ debian_initialize() {
 	echo "Changing Hostname"
 
 	read -p "Enter your hostname: " -r primary_domain
-	
 	primary_domain="${primary_domain,,}"
 
 	cat <<-EOF > /etc/hosts
