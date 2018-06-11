@@ -36,6 +36,7 @@ debian_initialize() {
 	echo "Changing Hostname"
 
 	read -p "Enter your hostname: " -r primary_domain
+	primary_domain="${primary_domain,,}"
 
 	cat <<-EOF > /etc/hosts
 	127.0.1.1 $primary_domain $primary_domain
@@ -177,6 +178,7 @@ install_ssl_Cert() {
 	while [ "$end" != "true" ]
 	do
 		read -p "Enter your server's domain or done to exit: " -r domain
+		domain="${domain,,}"
 		if [ "$domain" != "done" ]
 		then
 			letsencryptdomains[$i]=$domain
@@ -205,6 +207,7 @@ install_postfix_dovecot() {
 	apt-get install -qq -y mailutils
 
 	read -p "Enter your mail server's domain: " -r primary_domain
+	primary_domain="${primary_domain,,}"
 	read -p "Enter IP's to allow Relay (if none just hit enter): " -r relay_ip
 	echo "Configuring Postfix"
 
@@ -533,6 +536,7 @@ function Install_GoPhish {
 	case "$response" in
 	[yY][eE][sS]|[yY])
         	 read -p "Enter your web server's domain: " -r primary_domain
+		 primary_domain="${primary_domain,,}"
 		 if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ];then
 		 	ssl_cert="/etc/letsencrypt/live/${primary_domain}/fullchain.pem"
        		 	ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
