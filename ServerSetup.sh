@@ -213,8 +213,8 @@ install_postfix_dovecot() {
 	biff = no
 	append_dot_mydomain = no
 	readme_directory = no
-	smtpd_tls_cert_file=/etc/letsencrypt/live/${primary_domain}/fullchain.pem
-	smtpd_tls_key_file=/etc/letsencrypt/live/${primary_domain}/privkey.pem
+	smtpd_tls_cert_file = /etc/letsencrypt/live/${primary_domain}/fullchain.pem
+	smtpd_tls_key_file = /etc/letsencrypt/live/${primary_domain}/privkey.pem
 	smtpd_tls_security_level = may
 	smtp_tls_security_level = encrypt
 	smtpd_tls_session_cache_database = btree:\${data_directory}/smtpd_scache
@@ -236,6 +236,16 @@ install_postfix_dovecot() {
 	milter_protocol = 6
 	smtpd_milters = inet:12301,inet:localhost:54321
 	non_smtpd_milters = inet:12301,inet:localhost:54321
+	mime_header_checks = regexp:/etc/postfix/header_checks
+	header_checks = regexp:/etc/postfix/header_checks
+	EOF
+
+	# https://major.io/2013/04/14/remove-sensitive-information-from-email-headers-with-postfix/
+	cat <<-EOF > /etc/postfix/header_checks
+	/^Received:.*with ESMTPSA/              IGNORE
+	/^X-Originating-IP:/    IGNORE
+	/^X-Mailer:/            IGNORE
+	/^Mime-Version:/        IGNORE
 	EOF
 
 	cat <<-EOF >> /etc/postfix/master.cf
