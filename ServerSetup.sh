@@ -291,7 +291,7 @@ install_postfix_dovecot() {
 
 	cat <<-EOF > /etc/opendmarc.conf
 	AuthservID ${primary_domain}
-	PidFile /var/run/opendmarc.pid
+	PidFile /var/run/opendmarc/opendmarc.pid
 	RejectFailures false
 	Syslog true
 	TrustedAuthservIDs ${primary_domain}
@@ -355,8 +355,8 @@ install_postfix_dovecot() {
 	}
 
 	ssl=required
-	ssl_cert = </etc/letsencrypt/live/${primary_domain}/fullchain.pem
-	ssl_key = </etc/letsencrypt/live/${primary_domain}/privkey.pem
+	ssl_cert = /etc/letsencrypt/live/${primary_domain}/fullchain.pem
+	ssl_key = /etc/letsencrypt/live/${primary_domain}/privkey.pem
 	EOF
 
 	read -p "What user would you like to assign to recieve email for Root: " -r user_name
