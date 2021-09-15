@@ -167,8 +167,16 @@ add_firewall_port(){
 
 
 install_ssl_Cert() {
-	git clone https://github.com/certbot/certbot.git /opt/letsencrypt > /dev/null 2>&1
-
+	#git clone https://github.com/certbot/certbot.git /opt/letsencrypt > /dev/null 2>&1
+	#src :https://www.linode.com/docs/guides/enabling-https-using-certbot-with-nginx-on-debian/
+	
+	sudo apt install snapd
+	sudo snap install core
+	sudo snap refresh core
+	sudo apt remove certbot
+	sudo snap install --classic certbot
+	sudo ln -s /snap/bin/certbot /usr/bin/certbot
+	
 	cd /opt/letsencrypt
 	letsencryptdomains=()
 	end="false"
@@ -185,7 +193,7 @@ install_ssl_Cert() {
 		fi
 		((i++))
 	done
-	command="./certbot-auto certonly --standalone "
+	command="./certbot certonly --standalone "
 	for i in "${letsencryptdomains[@]}";
 		do
 			command="$command -d $i"
