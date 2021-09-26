@@ -16,6 +16,8 @@ debian_initialize() {
 	sudo apt install -qq -y dnsutils > /dev/null 2>&1
 	apt-get remove -qq -y exim4 exim4-base exim4-config exim4-daemon-light > /dev/null 2>&1
 	rm -r /var/log/exim4/ > /dev/null 2>&1
+	sudo apt-get remove certbot
+	
 
 	update-rc.d nfs-common disable > /dev/null 2>&1
 	update-rc.d rpcbind disable > /dev/null 2>&1
@@ -172,14 +174,14 @@ install_ssl_Cert() {
 	#git clone https://github.com/certbot/certbot.git /opt/letsencrypt > /dev/null 2>&1
 	#src :https://www.linode.com/docs/guides/enabling-https-using-certbot-with-nginx-on-debian/
 	
-	sudo apt install snapd
-	sudo snap install core
-	sudo snap refresh core
-	sudo apt remove certbot
+	sudo apt install -qq - y snapd
+	sudo snap install -qq - y core 
+	sudo snap refresh core 
+	sudo apt remove certbot -y
 	sudo snap install --classic certbot
 	sudo ln -s /snap/bin/certbot /usr/bin/certbot
 	
-	cd /opt/letsencrypt
+	#cd /opt/letsencrypt
 	letsencryptdomains=()
 	end="false"
 	i=0
@@ -195,7 +197,7 @@ install_ssl_Cert() {
 		fi
 		((i++))
 	done
-	command="./certbot certonly --standalone "
+	command="sudo certbot certonly --standalone "
 	for i in "${letsencryptdomains[@]}";
 		do
 			command="$command -d $i"
