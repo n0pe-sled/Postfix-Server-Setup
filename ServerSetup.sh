@@ -13,6 +13,7 @@ debian_initialize() {
 	apt-get -qq -y upgrade > /dev/null 2>&1
 	apt-get install -qq -y nmap > /dev/null 2>&1
 	apt-get install -qq -y git > /dev/null 2>&1
+	sudo apt install -qq -y dnsutils > /dev/null 2>&1
 	apt-get remove -qq -y exim4 exim4-base exim4-config exim4-daemon-light > /dev/null 2>&1
 	rm -r /var/log/exim4/ > /dev/null 2>&1
 
@@ -56,6 +57,7 @@ ubuntu_initialize() {
 	apt-get -qq -y upgrade > /dev/null 2>&1
 	apt-get install -qq -y nmap > /dev/null 2>&1
 	apt-get install -qq -y git > /dev/null 2>&1
+	sudo apt install -qq -y dnsutils > /dev/null 2>&1
 	rm -r /var/log/exim4/ > /dev/null 2>&1
 
 	update-rc.d nfs-common disable > /dev/null 2>&1
@@ -393,7 +395,7 @@ function add_alias(){
 }
 
 function get_dns_entries(){
-	extip=$(ifconfig|grep 'Link encap\|inet '|awk '!/Loopback|:127./'|tr -s ' '|grep 'inet'|tr ':' ' '|cut -d" " -f4)
+	extip=$(dig @resolver4.opendns.com myip.opendns.com +short)
 	domain=$(ls /etc/opendkim/keys/ | head -1)
 	fields=$(echo "${domain}" | tr '.' '\n' | wc -l)
 	dkimrecord=$(cut -d '"' -f 2 "/etc/opendkim/keys/${domain}/mail.txt" | tr -d "[:space:]")
