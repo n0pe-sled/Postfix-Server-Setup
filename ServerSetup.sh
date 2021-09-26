@@ -181,8 +181,8 @@ install_ssl_Cert() {
 		* ) echo "Please answer yes or no.";;
 	    esac
 	done
-	sudo apt install - y snapd
-	sudo snap install - y core 
+	sudo apt install -y snapd
+	sudo snap install -y core 
 	sudo snap refresh core 
 	sudo apt remove certbot -y
 	sudo snap install --classic certbot
