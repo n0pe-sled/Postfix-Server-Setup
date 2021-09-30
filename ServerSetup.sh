@@ -173,6 +173,7 @@ add_firewall_port(){
 install_ssl_Cert() {
 	#git clone https://github.com/certbot/certbot.git /opt/letsencrypt > /dev/null 2>&1
 	#src :https://www.linode.com/docs/guides/enabling-https-using-certbot-with-nginx-on-debian/
+	
 	while true; do
 	    read -p "Please make sure there is an A dns record with the domainname pointing to the IP?" yn
 	    case $yn in
@@ -181,12 +182,14 @@ install_ssl_Cert() {
 		* ) echo "Please answer yes or no.";;
 	    esac
 	done
-	sudo apt install snapd -y
-	sudo snap install core -y
-	sudo snap refresh core 
+	
 	sudo apt remove certbot -y
+	sudo apt install snapd -y
+	sudo snap install core
+	sudo snap refresh core
 	sudo snap install --classic certbot
 	sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
 	
 	#cd /opt/letsencrypt
 	letsencryptdomains=()
