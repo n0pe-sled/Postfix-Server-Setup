@@ -392,10 +392,10 @@ install_postfix_dovecot() {
 	service dovecot restart
 
 	echo "Checking Service Status"
-	service postfix status
-	service opendkim status
-	service opendmarc status
-	service dovecot status
+	service postfix status | cat
+	service opendkim status | cat
+	service opendmarc status | cat
+	service dovecot status | cat
 }
 
 function add_alias(){
