@@ -568,7 +568,7 @@ function Install_GoPhish {
 		 fi
        		 ;;
     	
-	cat << EOF > config.json
+	cat <<-EOF >> config.json
 	{
         "admin_server": {
                 "listen_url": "0.0.0.0:3333",
