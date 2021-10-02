@@ -551,27 +551,49 @@ function Install_GoPhish {
 	mkdir ./gophish
 	unzip gophish-v0.11.0-linux-64bit.zip -d ./gophish
 	cd gophish
-        sed -i 's/"listen_url" : "127.0.0.1:3333"/"listen_url" : "0.0.0.0:3333"/g' config.json
+    mv ./config.json  ./config.json.bkp
+	# creating the config.json file
 	read -r -p "Do you want to add an SSL certificate to your GoPhish? [y/N] " response
 	case "$response" in
 	[yY][eE][sS]|[yY])
         	 read -p "Enter your web server's domain: " -r primary_domain
 		 if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ];then
 		 	ssl_cert="/etc/letsencrypt/live/${primary_domain}/fullchain.pem"
-       		 	ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
-       		 	cp $ssl_cert ${primary_domain}.crt
-        	 	cp $ssl_key ${primary_domain}.key
-        	 	sed -i "s/0.0.0.0:80/0.0.0.0:443/g" config.json
-        	 	sed -i "s/gophish_admin.crt/${primary_domain}.crt/g" config.json
-        	 	sed -i "s/gophish_admin.key/${primary_domain}.key/g" config.json
-			sed -i 's/"use_tls" : false/"use_tls" : true/g' config.json
-        	 	sed -i "s/example.crt/${primary_domain}.crt/g" config.json
-        	 	sed -i "s/example.key/${primary_domain}.key/g" config.json
+       		ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
+       		cp $ssl_cert ${primary_domain}.crt
+        	cp $ssl_key ${primary_domain}.key
+        	 	
 		 else
 			echo "Certificate not found, use Install SSL option first"
 		 fi
        		 ;;
     	*)
+	cat <<-EOF > config.json
+	{
+        "admin_server": {
+                "listen_url": "0.0.0.0:3333",
+                "use_tls": true,
+                "cert_path": "$primary_domain.crt",
+                "key_path": "$primary_domain.key"
+        },
+        "phish_server": {
+                "listen_url": "0.0.0.0:80",
+                "use_tls": false,
+                "cert_path": "$primary_domain.crt",
+                "key_path": $primary_domain.key"
+        },
+        "db_name": "sqlite3",
+        "db_path": "gophish.db",
+        "migrations_prefix": "db/db_",
+        "contact_address": "",
+        "logging": {
+                "filename": "",
+				
+	EOF
+
+	
+    #sed -i 's/"listen_url" : "127.0.0.1:3333"/"listen_url" : "0.0.0.0:3333"/g' config.json
+	./gophish
         	echo "GoPhish installed"
         	;;
 	esac
