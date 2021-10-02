@@ -567,7 +567,7 @@ function Install_GoPhish {
 			echo "Certificate not found, use Install SSL option first"
 		 fi
        		 ;;
-    	*)
+    	
 	cat <<-EOF > config.json
 	{
         "admin_server": {
@@ -580,7 +580,7 @@ function Install_GoPhish {
                 "listen_url": "0.0.0.0:80",
                 "use_tls": false,
                 "cert_path": "$primary_domain.crt",
-                "key_path": $primary_domain.key"
+                "key_path": "$primary_domain.key"
         },
         "db_name": "sqlite3",
         "db_path": "gophish.db",
