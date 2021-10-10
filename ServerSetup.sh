@@ -547,56 +547,91 @@ setupSSH(){
 
 function Install_GoPhish {
 	apt-get install unzip > /dev/null 2>&1
-	wget https://github.com/gophish/gophish/releases/download/v0.11.0/gophish-v0.11.0-linux-64bit.zip
-	mkdir ./gophish
-	unzip gophish-v0.11.0-linux-64bit.zip -d ./gophish
-	cd gophish
-    mv ./config.json  ./config.json.bkp
-	# creating the config.json file
-	read -r -p "Do you want to add an SSL certificate to your GoPhish? [y/N] " response
-	case "$response" in
-	[yY][eE][sS]|[yY])
-        	 read -p "Enter your web server's domain: " -r primary_domain
-		 if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ];then
-		 	ssl_cert="/etc/letsencrypt/live/${primary_domain}/fullchain.pem"
-       		ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
-       		cp $ssl_cert ${primary_domain}.crt
-        	cp $ssl_key ${primary_domain}.key
-        	 	
-		 else
-			echo "Certificate not found, use Install SSL option first"
-		 fi
-       		 ;;
-    	
-	cat << EOF > config.json
-	{
-        "admin_server": {
-                "listen_url": "0.0.0.0:3333",
-                "use_tls": true,
-                "cert_path": "$primary_domain.crt",
-                "key_path": "$primary_domain.key"
-        },
-        "phish_server": {
-                "listen_url": "0.0.0.0:80",
-                "use_tls": false,
-                "cert_path": "$primary_domain.crt",
-                "key_path": "$primary_domain.key"
-        },
-        "db_name": "sqlite3",
-        "db_path": "gophish.db",
-        "migrations_prefix": "db/db_",
-        "contact_address": "",
-        "logging": {
-                "filename": "",
-				
-	EOF
+wget https://github.com/gophish/gophish/releases/download/v0.11.0/gophish-v0.11.0-linux-64bit.zip
+mkdir ./gophish
+unzip gophish-v0.11.0-linux-64bit.zip -d ./gophish
+cd gophish
+read -p "Enter your web server's domain: " -r primary_domain
+if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ]
+then
+    ssl_cert="/etc/letsencrypt/live/${primary_domain}/fullchain.pem"
+    ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
+    cp $ssl_cert ${primary_domain}.crt
+    cp $ssl_key ${primary_domain}.key
+else
+    echo "Certificate not found, use Install SSL option first"
+fi
 
-	
-    #sed -i 's/"listen_url" : "127.0.0.1:3333"/"listen_url" : "0.0.0.0:3333"/g' config.json
-	./gophish
-        	echo "GoPhish installed"
-        	;;
-	esac
+sed -i 's/127.0.0.1:3333/0.0.0.0:3333/g' config.json
+sed -i "s/gophish_admin/$primary_domain/g" config.json
+sed -i "s/gophish_admin/$primary_domain/g" config.json
+sed -i "s/example/$primary_domain/g" config.json
+sed -i "s/example.key/primary_domain/g" config.json
+chmod +x gophish
+echo "GoPhish installed"
+
+#create a script to Script to start, stop and show status gophish
+
+mkdir /root/script
+mkdir /var/log/gophish
+cat << EOF > /root/script/gophish
+
+#!/bin/bash
+#
+#Script to initialized gophish
+#
+ 
+#Setting some variables
+ 
+procname=Gophish
+proc=gophish
+appDir=/opt/gophish/
+logfile=/var/log/gophish/gophish.log
+errorfile=/var/log/gophish/gophish.error
+ 
+start() {
+        echo 'Starting '${procname}'....'
+        cd ${appDir}
+        nohup ./$proc >>$logfile 2>>$errorfile &
+        sleep 1
+}
+ 
+stop() {
+        echo 'Stopping '${procname}'....'
+        pid=$(pidof ${proc})
+        kill ${pid}
+        sleep 1
+}
+ 
+status() {
+        pid=$(pidof ${proc})
+        if [[ "$pid" != "" ]]; then
+                echo ${procname}' is running....'
+        else
+                echo ${procname}' is not running....'
+        fi
+}
+ 
+case $1 in
+                start|stop|status) "$1" ;;
+esac
+
+EOF
+
+chmod +x /root/script/gophsih
+
+export PATH=$PATH:/root/script
+cat << EOF >> ~/.bashrc
+# check if local bin folder exist
+# $HOME/bin
+# prepend it to $PATH if so 
+if [ -d $HOME/bin ] ; then 
+		export PATH=bin:$PATH
+fi
+
+export PATH=$PATH:/root/script
+
+EOF
 }
 
 
