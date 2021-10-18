@@ -566,7 +566,7 @@ sed -i 's/127.0.0.1:3333/0.0.0.0:3333/g' config.json
 sed -i "s/gophish_admin/$primary_domain/g" config.json
 sed -i "s/gophish_admin/$primary_domain/g" config.json
 sed -i "s/example/$primary_domain/g" config.json
-sed -i "s/example.key/primary_domain/g" config.json
+#sed -i "s/example.key/primary_domain/g" config.json
 chmod +x gophish
 echo "GoPhish installed"
 
