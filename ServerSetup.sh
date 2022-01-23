@@ -568,7 +568,7 @@ sed -i "s/gophish_admin/$primary_domain/g" config.json
 sed -i "s/example/$primary_domain/g" config.json
 #sed -i "s/example.key/primary_domain/g" config.json
 
-echo '$(pwd)'
+echo $PWD
 sudo chmod +x ./gophish/gophish
 echo "GoPhish installed"
 
