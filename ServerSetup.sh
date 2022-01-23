@@ -574,7 +574,7 @@ echo "GoPhish installed"
 
 mkdir /root/script
 mkdir /var/log/gophish
-cat << EOF > /root/script/gophish
+cat << EOF > /root/script/gophish.sh
 
 #!/bin/bash
 #
@@ -618,7 +618,7 @@ esac
 
 EOF
 
-chmod +x /root/script/gophsih
+chmod +x /root/script/gophish.sh
 
 export PATH=$PATH:/root/script
 cat << EOF >> ~/.bashrc
