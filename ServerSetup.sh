@@ -574,7 +574,7 @@ echo "GoPhish installed"
 
 mkdir /root/script
 mkdir /var/log/gophish
-cat << EOF > /root/script/gophish.sh
+cat << EOF > /root/script/gophish
 
 #!/bin/bash
 #
@@ -618,10 +618,10 @@ esac
 
 EOF
 
-chmod +x /root/script/gophish.sh
+chmod +x /root/script/gophish
 
 export PATH=$PATH:/root/script
-cat << EOF >> ~/.bashrc
+sudo cat << EOF >> ~/.bashrc
 # check if local bin folder exist
 # $HOME/bin
 # prepend it to $PATH if so 
