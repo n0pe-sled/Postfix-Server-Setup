@@ -567,7 +567,9 @@ sed -i "s/gophish_admin/$primary_domain/g" config.json
 sed -i "s/gophish_admin/$primary_domain/g" config.json
 sed -i "s/example/$primary_domain/g" config.json
 #sed -i "s/example.key/primary_domain/g" config.json
-chmod +x ./gophish/gophish
+
+echo '$(pwd)'
+sudo chmod +x ./gophish/gophish
 echo "GoPhish installed"
 
 #create a script to Script to start, stop and show status gophish
@@ -633,8 +635,6 @@ export PATH=$PATH:/root/script
 
 EOF
 }
-
-
 function Install_IRedMail {
 	echo "Downloading iRedMail"
 	wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.9.6.tar.bz2
