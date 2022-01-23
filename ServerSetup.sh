@@ -546,94 +546,39 @@ setupSSH(){
 }
 
 function Install_GoPhish {
-	apt-get install unzip > /dev/null 2>&1
-wget https://github.com/gophish/gophish/releases/download/v0.11.0/gophish-v0.11.0-linux-64bit.zip
-mkdir ./gophish
-unzip gophish-v0.11.0-linux-64bit.zip -d ./gophish
-cd gophish
-read -p "Enter your web server's domain: " -r primary_domain
-if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ]
-then
-    ssl_cert="/etc/letsencrypt/live/${primary_domain}/fullchain.pem"
-    ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
-    cp $ssl_cert ${primary_domain}.crt
-    cp $ssl_key ${primary_domain}.key
-else
-    echo "Certificate not found, use Install SSL option first"
-fi
+	function Install_GoPhish {
 
-sed -i 's/127.0.0.1:3333/0.0.0.0:3333/g' config.json
-sed -i "s/gophish_admin/$primary_domain/g" config.json
-sed -i "s/gophish_admin/$primary_domain/g" config.json
-sed -i "s/example/$primary_domain/g" config.json
-#sed -i "s/example.key/primary_domain/g" config.json
-dir1=$(pwd)
-echo "${dir1}"
-sudo chmod +x /root/gophish/gophish
-echo "GoPhish installed"
+	sudo apt-get install golang -qq -y
+	go get github.com/gophish/gophish
+	cd /root/go/src/github.com/gophish/gophish
+	go build 
+	sudo ./gophish
+	
+	read -p "Enter your web server's domain: " -r primary_domain
+	if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ]
+	then
+		ssl_cert="/etc/letsencrypt/live/${primary_domain}/fullchain.pem"
+		ssl_key="/etc/letsencrypt/live/${primary_domain}/privkey.pem"
+		cp $ssl_cert ${primary_domain}.crt
+		cp $ssl_key ${primary_domain}.key
+	else
+		echo "Certificate not found, use Install SSL option first"
+	fi
 
-#create a script to Script to start, stop and show status gophish
+	sed -i 's/127.0.0.1:3333/0.0.0.0:3333/g' config.json
+	sed -i "s/gophish_admin/$primary_domain/g" config.json
+	sed -i "s/gophish_admin/$primary_domain/g" config.json
+	sed -i "s/example/$primary_domain/g" config.json
+	#sed -i "s/example.key/primary_domain/g" config.json
 
-mkdir /root/script
-mkdir /var/log/gophish
-cat << EOF > /root/script/gophish
 
-#!/bin/bash
-#
-#Script to initialized gophish
-#
- 
-#Setting some variables
- 
-procname=Gophish
-proc=gophish
-appDir=/opt/gophish/
-logfile=/var/log/gophish/gophish.log
-errorfile=/var/log/gophish/gophish.error
- 
-start() {
-        echo 'Starting '${procname}'....'
-        cd ${appDir}
-        nohup ./$proc >>$logfile 2>>$errorfile &
-        sleep 1
+	echo "GoPhish installed"
+
+	#create a script to Script to start, stop and show status gophish
+
+
 }
- 
-stop() {
-        echo 'Stopping '${procname}'....'
-        pid=$(pidof ${proc})
-        kill ${pid}
-        sleep 1
-}
- 
-status() {
-        pid=$(pidof ${proc})
-        if [[ "$pid" != "" ]]; then
-                echo ${procname}' is running....'
-        else
-                echo ${procname}' is not running....'
-        fi
-}
- 
-case $1 in
-                start|stop|status) "$1" ;;
-esac
 
-EOF
-
-chmod +x /root/script/gophish
-
-export PATH=$PATH:/root/script
-sudo cat << EOF >> ~/.bashrc
-# check if local bin folder exist
-# $HOME/bin
-# prepend it to $PATH if so 
-if [ -d $HOME/bin ] ; then 
-		export PATH=bin:$PATH
-fi
-
-export PATH=$PATH:/root/script
-
-EOF
 }
 function Install_IRedMail {
 	echo "Downloading iRedMail"
