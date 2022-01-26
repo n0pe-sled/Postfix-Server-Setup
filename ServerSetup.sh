@@ -16,8 +16,8 @@ debian_initialize() {
 	sudo apt install -qq -y dnsutils > /dev/null 2>&1
 	apt-get remove -qq -y exim4 exim4-base exim4-config exim4-daemon-light > /dev/null 2>&1
 	rm -r /var/log/exim4/ > /dev/null 2>&1
-	sudo apt-get remove certbot
-	sudo apt install tmux
+	sudo apt-get remove certbot -y
+	sudo apt install tmux -y
 
 	
 
