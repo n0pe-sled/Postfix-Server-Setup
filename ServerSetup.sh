@@ -551,7 +551,7 @@ function Install_GoPhish {
 	function Install_GoPhish {
 
 	sudo apt-get install golang -qq -y
-	apt-get install build-essential
+	apt-get install build-essential -y
 	go get github.com/gophish/gophish
 	cd /root/go/src/github.com/gophish/gophish
 	go build 
