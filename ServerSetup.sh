@@ -215,13 +215,14 @@ letsencryptdomains=()
 	command="sudo certbot certonly --manual --preferred-challenges dns --agree-tos --register-unsafely-without-email"
 	for i in "${letsencryptdomains[@]}";
 		do
-			tmux -new -s $i
+			tmux new-session -s $i
 			command="$command -d $i"
+      			eval $command
 			tmux deatach
 		done
 	#command="$command -n --register-unsafely-without-email --agree-tos"
 	
-	eval $command
+	#eval $command
 
 }
 
