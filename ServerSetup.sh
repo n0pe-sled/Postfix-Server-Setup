@@ -218,7 +218,7 @@ letsencryptdomains=()
 			tmux new-session -s $i
 			command="$command -d $i"
       			eval $command
-			tmux deatach
+			tmux detach
 		done
 	#command="$command -n --register-unsafely-without-email --agree-tos"
 	
