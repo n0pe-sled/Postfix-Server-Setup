@@ -194,7 +194,7 @@ install_ssl_Cert() {
 
 	
 	#cd /opt/letsencrypt
-	letsencryptdomains=()
+letsencryptdomains=()
 	end="false"
 	i=0
 	
@@ -212,10 +212,12 @@ install_ssl_Cert() {
 	#certonly -d {your domain} --manual --preferred-challenges dns
 
 
-	command="sudo certbot certonly --manual --preferred-challenges dns"
+	command="sudo certbot certonly --manual --preferred-challenges dns --agree-tos --register-unsafely-without-email"
 	for i in "${letsencryptdomains[@]}";
 		do
+			tmux -new -s $i
 			command="$command -d $i"
+			tmux deatach
 		done
 	#command="$command -n --register-unsafely-without-email --agree-tos"
 	
