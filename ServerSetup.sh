@@ -209,12 +209,15 @@ install_ssl_Cert() {
 		fi
 		((i++))
 	done
-	command="sudo certbot certonly --standalone "
+	#certonly -d {your domain} --manual --preferred-challenges dns
+
+
+	command="sudo certbot certonly --manual --preferred-challenges dns"
 	for i in "${letsencryptdomains[@]}";
 		do
 			command="$command -d $i"
 		done
-	command="$command -n --register-unsafely-without-email --agree-tos"
+	#command="$command -n --register-unsafely-without-email --agree-tos"
 	
 	eval $command
 
