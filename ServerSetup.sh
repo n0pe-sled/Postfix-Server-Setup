@@ -580,7 +580,56 @@ function Install_GoPhish {
 	sed -i "s/example/$primary_domain/g" config.json
 	#sed -i "s/example.key/primary_domain/g" config.json
 
+	
+	#make gohish as a service
+	cat <<-EOF > /etc/init.d/gophish
+	#!/bin/bash
+	# /etc/init.d/gophish
+	# initialization file for stop/start of gophish application server
+	# description: stops/starts gophish application server
+	# processname:gophish
+	# config:/opt/gophish/config.json
 
+	# define script variables
+
+	processName=Gophish
+	process=gophish
+	appDirectory=/opt/gophish
+	logfile=/var/log/gophish/gophish.log
+	errfile=/var/log/gophish/gophish.error
+
+	start() {
+	echo ‘Starting ‘${processName}’…’
+	cd ${appDirectory}
+	nohup ./$process >>$logfile 2>>$errfile &
+	sleep 1
+	}
+
+	stop() {
+	echo ‘Stopping ‘${processName}’…’
+	pid=$(/usr/sbin/pidof ${process})
+	kill ${pid}
+	sleep 1
+	}
+
+	status() {
+	pid=$(/usr/sbin/pidof ${process})
+	if [[ “$pid” != “” ]]; then
+	echo ${processName}’ is running…’
+	else
+	echo ${processName}’ is not running…’
+	fi
+	}
+
+	case $1 in
+	start|stop|status) “$1” ;;
+	esac
+	EOF
+	
+	sudo chmod +x /etc/init.d/gophish
+	sudo mkdir /var/log/gophish
+	sudo update-rc.d gophish defaults
+	
 	echo "GoPhish installed"
 
 	#create a script to Script to start, stop and show status gophish
