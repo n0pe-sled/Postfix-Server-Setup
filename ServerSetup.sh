@@ -561,7 +561,7 @@ function Install_GoPhish {
 	go get github.com/gophish/gophish
 	cd /root/go/src/github.com/gophish/gophish
 	go build 
-	sudo ./gophish
+	#sudo ./gophish
 	
 	read -p "Enter your web server's domain: " -r primary_domain
 	if [ -f "/etc/letsencrypt/live/${primary_domain}/fullchain.pem" ]
@@ -578,11 +578,12 @@ function Install_GoPhish {
 	sed -i "s/gophish_admin/$primary_domain/g" config.json
 	sed -i "s/gophish_admin/$primary_domain/g" config.json
 	sed -i "s/example/$primary_domain/g" config.json
-	#sed -i "s/example.key/primary_domain/g" config.json
+	sed -i "s/false/true/g" config.json
+	sed -i "s/0.0.0.0:80/0.0.0.0:443/g" config.json
 
 	
 	#make gohish as a service
-	cat <<-EOF > /etc/init.d/gophish
+	cat <<EOF >> /etc/init.d/gophish
 	#!/bin/bash
 	# /etc/init.d/gophish
 	# initialization file for stop/start of gophish application server
